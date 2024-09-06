@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frost Coffee Admin - Settings</title>
+
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Include Montserrat font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --main-bg-color: #f2e8d5;
+            --main-text-color: #4a3b2a;
+            --accent-color: #8c5e3c;
+            --button-bg-color: #d2b98b;
+            --form-bg-color: #f5e8d4;
+            --input-border-color: #c1a58d;
+            --overlay-bg-gradient: linear-gradient(to right, #f2e8d5, #e9d8a6, #d2b98b, #f5e8d4);
+            --frosty-blue: #87ceeb;
+            --ice-blue: #d8efff;
+            --light-beige: #f8f2e7;
+            --drag-bar-color: #e5d3c2; /* Very light shade of brown */
+            --dark-bg-color: #1e1e1e;
+            --dark-text-color: #e5e5e5;
+            --high-contrast-bg: #000;
+            --high-contrast-text: #fff;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--main-text-color);
+            background-color: var(--main-bg-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .dark-mode {
+            background-color: var(--dark-bg-color);
+            color: var(--dark-text-color);
+        }
+
+        .high-contrast {
+            background-color: var(--high-contrast-bg);
+            color: var(--high-contrast-text);
+        }
+
+        .card {
+            background-color: var(--form-bg-color);
+            border: 1px solid var(--input-border-color);
+            border-radius: 15px;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: var(--frosty-blue);
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .card-body {
+            background-color: var(--form-bg-color);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--button-bg-color);
+            border-color: var(--button-bg-color);
+        }
+
+        .form-select {
+            border-color: var(--input-border-color);
+        }
+
+        .navbar {
+            background-color: var(--frosty-blue);
+            color: #fff;
+        }
+
+        .navbar-brand {
+            color: #fff;
+        }
+
+        footer {
+            background-color: var(--frosty-blue);
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .settings-content {
+            margin-top: 20px;
+        }
+
+        .settings-content h1 {
+            color: var(--main-text-color);
+        }
+
+        .navbar-nav a {
+            color: #fff;
+        }
+
+        .navbar-nav .nav-link {
+            color: #fff;
+        }
+
+        .sidebar {
+            background-color: var(--drag-bar-color);
+            padding: 15px;
+            position: fixed;
+            height: 100%;
+            width: 250px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: var(--main-text-color);
+            text-decoration: none;
+            padding: 10px 0;
+        }
+
+        .sidebar a:hover {
+            background-color: var(--ice-blue);
+            border-radius: 5px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 15px;
+        }
+
+        /* View Modes */
+        .view-standard .card {
+            padding: 20px;
+        }
+
+        .view-compact .card {
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+
+        .view-detailed .card {
+            padding: 30px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3>Frost Coffee Admin</h3>
+        <a href="admin.html">Dashboard</a>
+        <a href="traffic.html">Traffic</a>
+        <a href="orders.html">Orders</a>
+        <a href="settings.html">Settings</a>
+        <a href="users.html">Users</a>
+        <a href="analytics.html">Analytics</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <a class="navbar-brand" href="#">Frost Coffee Admin Settings</a>
+        </nav>
+
+        <!-- Settings Page -->
+        <div class="container-fluid settings-content mt-4">
+            <h1>Settings</h1>
+            <p>Customize your dashboard appearance and layout.</p>
+
+            <!-- Layout Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Dashboard Layout</h5>
+                </div>
+                <div class="card-body">
+                    <form id="layoutForm">
+                        <div class="mb-3">
+                            <label for="layoutSelect" class="form-label">Select Layout</label>
+                            <select id="layoutSelect" class="form-select">
+                                <option value="standard">Standard</option>
+                                <option value="compact">Compact</option>
+                                <option value="detailed">Detailed</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="applyLayout()">Apply Layout</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Theme Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Theme Settings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" id="darkMode" class="form-check-input">
+                        <label for="darkMode" class="form-check-label">Dark Mode</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" id="highContrast" class="form-check-input">
+                        <label for="highContrast" class="form-check-label">High Contrast</label>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="applyTheme()">Apply Theme</button>
+                </div>
+            </div>
+
+            <!-- Additional Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Additional Settings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="graphModeSelect" class="form-label">Graph Mode</label>
+                        <select id="graphModeSelect" class="form-select">
+                            <option value="line">Line Chart</option>
+                            <option value="bar">Bar Chart</option>
+                            <option value="pie">Pie Chart</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="gridModeSelect" class="form-label">Grid Mode</label>
+                        <select id="gridModeSelect" class="form-select">
+                            <option value="basic">Basic Grid</option>
+                            <option value="advanced">Advanced Grid</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="perspectiveSelect" class="form-label">Dashboard Perspective</label>
+                        <select id="perspectiveSelect" class="form-select">
+                            <option value="overview">Overview</option>
+                            <option value="detailed">Detailed</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="applyAdditionalSettings()">Apply Settings</button>
+                </div>
+            </div>
+
+            <!-- View Options -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>View Options</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="viewSelect" class="form-label">Select View</label>
+                        <select id="viewSelect" class="form-select">
+                            <option value="standard">Standard</option>
+                            <option value="compact">Compact</option>
+                            <option value="detailed">Detailed</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="applyView()">Apply View</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Frost Coffee. All rights reserved.</p>
+    </footer>
+
+    <!-- Include Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+// JavaScript for settings.html
+
+// Load and apply saved settings from localStorage
+document.addEventListener('DOMContentLoaded', () => {
+    applySavedSettings();
+});
+
+// Apply saved settings from localStorage
+function applySavedSettings() {
+    const savedLayout = localStorage.getItem('layout') || 'standard';
+    const savedDarkMode = JSON.parse(localStorage.getItem('darkMode')) || false;
+    const savedHighContrast = JSON.parse(localStorage.getItem('highContrast')) || false;
+    const savedGraphMode = localStorage.getItem('graphMode') || 'line';
+    const savedGridMode = localStorage.getItem('gridMode') || 'basic';
+    const savedPerspective = localStorage.getItem('perspective') || 'overview';
+    const savedView = localStorage.getItem('view') || 'standard';
+
+    document.getElementById('layoutSelect').value = savedLayout;
+    document.getElementById('darkMode').checked = savedDarkMode;
+    document.getElementById('highContrast').checked = savedHighContrast;
+    document.getElementById('graphModeSelect').value = savedGraphMode;
+    document.getElementById('gridModeSelect').value = savedGridMode;
+    document.getElementById('perspectiveSelect').value = savedPerspective;
+    document.getElementById('viewSelect').value = savedView;
+
+    applyLayout(savedLayout);
+    applyTheme(savedDarkMode, savedHighContrast);
+    applyAdditionalSettings(savedGraphMode, savedGridMode, savedPerspective);
+    applyView(savedView);
+}
+
+// Apply settings to other pages
+function applySettingsToPages() {
+    const layout = localStorage.getItem('layout') || 'standard';
+    const darkMode = JSON.parse(localStorage.getItem('darkMode')) || false;
+    const highContrast = JSON.parse(localStorage.getItem('highContrast')) || false;
+    const graphMode = localStorage.getItem('graphMode') || 'line';
+    const gridMode = localStorage.getItem('gridMode') || 'basic';
+    const perspective = localStorage.getItem('perspective') || 'overview';
+    const view = localStorage.getItem('view') || 'standard';
+
+    // Apply layout and theme to other pages (admin.html, traffic.html, etc.)
+    document.querySelectorAll('.main-content').forEach(content => {
+        content.classList.remove('view-standard', 'view-compact', 'view-detailed');
+        content.classList.add(`view-${layout}`);
+    });
+
+    document.body.classList.toggle('dark-mode', darkMode);
+    document.body.classList.toggle('high-contrast', highContrast);
+
+    // Apply graph mode, grid mode, and perspective to stats pages
+    document.querySelectorAll('.chart').forEach(chart => {
+        chart.classList.remove('graph-line', 'graph-bar', 'graph-pie');
+        chart.classList.add(`graph-${graphMode}`);
+    });
+
+    document.querySelectorAll('.grid').forEach(grid => {
+        grid.classList.remove('grid-basic', 'grid-detailed');
+        grid.classList.add(`grid-${gridMode}`);
+    });
+
+    // Adjust perspectives on the pages
+    document.querySelectorAll('.perspective').forEach(perspectiveElement => {
+        perspectiveElement.classList.remove('perspective-overview', 'perspective-detailed');
+        perspectiveElement.classList.add(`perspective-${perspective}`);
+    });
+
+    // Apply view mode
+    document.querySelectorAll('.view-container').forEach(container => {
+        container.classList.remove('view-standard', 'view-compact', 'view-detailed');
+        container.classList.add(`view-${view}`);
+    });
+}
+
+// Function to apply the selected layout to the main content
+function applyLayout(layout) {
+    const content = document.querySelector('.main-content');
+
+    // Remove existing layout classes
+    content.classList.remove('view-standard', 'view-compact', 'view-detailed');
+
+    // Add the selected layout class
+    content.classList.add(`view-${layout}`);
+
+    // Save layout setting
+    localStorage.setItem('layout', layout);
+}
+
+// Function to apply the selected theme settings
+function applyTheme(darkMode, highContrast) {
+    // Toggle dark mode
+    document.body.classList.toggle('dark-mode', darkMode);
+
+    // Toggle high contrast mode
+    document.body.classList.toggle('high-contrast', highContrast);
+
+    // Save theme settings
+    localStorage.setItem('darkMode', darkMode);
+    localStorage.setItem('highContrast', highContrast);
+}
+
+// Function to apply additional settings like graph mode, grid mode, and perspective
+function applyAdditionalSettings(graphMode, gridMode, perspective) {
+    // Apply settings globally
+    document.querySelectorAll('.chart').forEach(chart => {
+        chart.classList.remove('graph-line', 'graph-bar', 'graph-pie');
+        chart.classList.add(`graph-${graphMode}`);
+    });
+
+    document.querySelectorAll('.grid').forEach(grid => {
+        grid.classList.remove('grid-basic', 'grid-detailed');
+        grid.classList.add(`grid-${gridMode}`);
+    });
+
+    document.querySelectorAll('.perspective').forEach(perspectiveElement => {
+        perspectiveElement.classList.remove('perspective-overview', 'perspective-detailed');
+        perspectiveElement.classList.add(`perspective-${perspective}`);
+    });
+
+    // Save additional settings
+    localStorage.setItem('graphMode', graphMode);
+    localStorage.setItem('gridMode', gridMode);
+    localStorage.setItem('perspective', perspective);
+}
+
+// Function to apply the selected view mode to the settings content
+function applyView(view) {
+    const content = document.querySelector('.settings-content');
+
+    // Remove existing view classes
+    content.classList.remove('view-standard', 'view-compact', 'view-detailed');
+
+    // Add the selected view class
+    content.classList.add(`view-${view}`);
+
+    // Save view setting
+    localStorage.setItem('view', view);
+}
+
+// Event listeners for the apply buttons
+document.getElementById('layoutForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const layout = document.getElementById('layoutSelect').value;
+    applyLayout(layout);
+    applySettingsToPages();
+});
+
+document.getElementById('themeForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const darkMode = document.getElementById('darkMode').checked;
+    const highContrast = document.getElementById('highContrast').checked;
+    applyTheme(darkMode, highContrast);
+    applySettingsToPages();
+});
+
+document.getElementById('additionalSettingsForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const graphMode = document.getElementById('graphModeSelect').value;
+    const gridMode = document.getElementById('gridModeSelect').value;
+    const perspective = document.getElementById('perspectiveSelect').value;
+    applyAdditionalSettings(graphMode, gridMode, perspective);
+    applySettingsToPages();
+});
+
+document.getElementById('viewForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const view = document.getElementById('viewSelect').value;
+    applyView(view);
+    applySettingsToPages();
+});
+
+
+    </script>
+</body>
+</html>

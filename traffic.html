@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frost Coffee Traffic Dashboard</title>
+
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Include Montserrat font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Include Chart.js for charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --main-bg-color: #f2e8d5;
+            --main-text-color: #4a3b2a;
+            --accent-color: #8c5e3c;
+            --button-bg-color: #d2b98b;
+            --form-bg-color: #f5e8d4;
+            --input-border-color: #c1a58d;
+            --overlay-bg-gradient: linear-gradient(to right, #f2e8d5, #e9d8a6, #d2b98b, #f5e8d4);
+            --frosty-blue: #87ceeb;
+            --ice-blue: #d8efff;
+            --light-beige: #f8f2e7;
+            --drag-bar-color: #e5d3c2; /* Very light shade of brown */
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--main-text-color);
+            background-color: var(--main-bg-color);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container-fluid {
+            padding-left: 20px;
+        }
+
+        .sidebar {
+            background-color: var(--drag-bar-color);
+            color: #4a3b2a;
+            padding-top: 20px;
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transition: all 0.3s ease-in-out;
+            border-right: 2px solid var(--accent-color);
+            overflow-y: auto;
+        }
+
+        .sidebar a {
+            color: #4a3b2a;
+            padding: 15px;
+            display: block;
+            font-size: 16px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .sidebar a:hover {
+            background-color: var(--ice-blue);
+            color: var(--main-text-color);
+        }
+
+        .sidebar h3 {
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .main-content {
+            margin-left: 270px;
+            padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .card {
+            background-color: var(--form-bg-color);
+            border: 1px solid var(--input-border-color);
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar {
+            background-color: var(--frosty-blue);
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .navbar-brand {
+            color: #fff;
+        }
+
+        h1, h5 {
+            color: var(--main-text-color);
+        }
+
+        footer {
+            background-color: var(--frosty-blue);
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .chart-container {
+            height: 400px;
+        }
+
+        .table-responsive {
+            margin-top: 30px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .sidebar, .main-content, footer {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Responsive */
+        @media only screen and (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+
+            .sidebar {
+                position: relative;
+                height: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3>Frost Coffee Admin</h3>
+        <a href="admin.html">Dashboard</a>
+        <a href="traffic.html">Traffic</a>
+        <a href="orders.html">Orders</a>
+        <a href="settings.html">Settings</a>
+        <a href="users.html">Users</a>
+        <a href="analytics.html">Analytics</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="#">Frost Coffee Traffic Dashboard</a>
+        </nav>
+
+        <!-- Traffic Dashboard Heading -->
+        <div class="container-fluid mt-4 fade-in">
+            <h1>Website Traffic Analysis</h1>
+            <p>Analyze the website traffic data to understand visitor behavior and trends.</p>
+
+            <!-- Metrics Grid -->
+            <div class="dashboard-grid fade-in">
+                <!-- Total Visits Card -->
+                <div class="card">
+                    <h5 class="card-title">Total Visits</h5>
+                    <h2>15,600</h2>
+                    <small>Overall visits this year</small>
+                </div>
+
+                <!-- Unique Visitors Card -->
+                <div class="card">
+                    <h5 class="card-title">Unique Visitors</h5>
+                    <h2>8,900</h2>
+                    <small>Distinct users visiting</small>
+                </div>
+
+                <!-- Bounce Rate Card -->
+                <div class="card">
+                    <h5 class="card-title">Bounce Rate</h5>
+                    <h2>42%</h2>
+                    <small>Percentage of single-page visits</small>
+                </div>
+
+                <!-- Avg. Page Views Card -->
+                <div class="card">
+                    <h5 class="card-title">Average Page Views</h5>
+                    <h2>5.2</h2>
+                    <small>Pages viewed per session</small>
+                </div>
+
+                <!-- New vs Returning Visitors Card -->
+                <div class="card">
+                    <h5 class="card-title">New vs Returning Visitors</h5>
+                    <h2>65% / 35%</h2>
+                    <small>Ratio of new to returning visitors</small>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row mt-5 fade-in">
+                <div class="col-md-6">
+                    <div class="card chart-container">
+                        <h5>Monthly Traffic Overview</h5>
+                        <canvas id="monthlyTrafficChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card chart-container">
+                        <h5>Daily Traffic Patterns</h5>
+                        <canvas id="dailyTrafficChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table of Traffic Sources -->
+            <div class="table-responsive fade-in">
+                <h5>Traffic Sources</h5>
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Source</th>
+                            <th>Visits</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Organic Search</td>
+                            <td>6,200</td>
+                            <td>40%</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Direct</td>
+                            <td>4,500</td>
+                            <td>29%</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Social Media</td>
+                            <td>2,800</td>
+                            <td>18%</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Referral</td>
+                            <td>1,800</td>
+                            <td>12%</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Paid Search</td>
+                            <td>1,200</td>
+                            <td>8%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="fade-in">
+        &copy; 2024 Frost Coffee. All rights reserved.
+    </footer>
+
+    <!-- Chart.js Scripts -->
+    <script>
+        const ctxMonthlyTraffic = document.getElementById('monthlyTrafficChart').getContext('2d');
+        const monthlyTrafficChart = new Chart(ctxMonthlyTraffic, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Monthly Traffic',
+                    data: [1200, 1500, 1800, 1600, 2000, 2200, 2500, 2400, 2300, 2700, 2900, 3100],
+                    backgroundColor: 'rgba(140, 94, 60, 0.2)',
+                    borderColor: 'rgba(140, 94, 60, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month',
+                            color: '#4a3b2a'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Visits',
+                            color: '#4a3b2a'
+                        }
+                    }
+                }
+            }
+        });
+
+        const ctxDailyTraffic = document.getElementById('dailyTrafficChart').getContext('2d');
+        const dailyTrafficChart = new Chart(ctxDailyTraffic, {
+            type: 'bar',
+            data: {
+                labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                datasets: [{
+                    label: 'Daily Traffic',
+                    data: [300, 450, 400, 500, 600, 650, 700],
+                    backgroundColor: '#8c5e3c'
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Day of the Week',
+                            color: '#4a3b2a'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Visits',
+                            color: '#4a3b2a'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

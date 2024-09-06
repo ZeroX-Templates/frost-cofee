@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frost Coffee Orders Dashboard</title>
+
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Include Montserrat font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Include Chart.js for charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --main-bg-color: #f2e8d5;
+            --main-text-color: #4a3b2a;
+            --accent-color: #8c5e3c;
+            --button-bg-color: #d2b98b;
+            --form-bg-color: #f5e8d4;
+            --input-border-color: #c1a58d;
+            --overlay-bg-gradient: linear-gradient(to right, #f2e8d5, #e9d8a6, #d2b98b, #f5e8d4);
+            --frosty-blue: #87ceeb;
+            --ice-blue: #d8efff;
+            --light-beige: #f8f2e7;
+            --drag-bar-color: #e5d3c2; /* Very light shade of brown */
+        }
+
+        /* General Styles */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--main-text-color);
+            background-color: var(--main-bg-color);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container-fluid {
+            padding-left: 20px;
+        }
+
+        .sidebar {
+            background-color: var(--drag-bar-color);
+            color: #4a3b2a;
+            padding-top: 20px;
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transition: all 0.3s ease-in-out;
+            border-right: 2px solid var(--accent-color);
+            overflow-y: auto;
+        }
+
+        .sidebar a {
+            color: #4a3b2a;
+            padding: 15px;
+            display: block;
+            font-size: 16px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .sidebar a:hover {
+            background-color: var(--ice-blue);
+            color: var(--main-text-color);
+        }
+
+        .sidebar h3 {
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .main-content {
+            margin-left: 270px;
+            padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .card {
+            background-color: var(--form-bg-color);
+            border: 1px solid var(--input-border-color);
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar {
+            background-color: var(--frosty-blue);
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .navbar-brand {
+            color: #fff;
+        }
+
+        h1, h5 {
+            color: var(--main-text-color);
+        }
+
+        footer {
+            background-color: var(--frosty-blue);
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .chart-container {
+            height: 400px;
+        }
+
+        .table-responsive {
+            margin-top: 30px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .sidebar, .main-content, footer {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Responsive */
+        @media only screen and (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+
+            .sidebar {
+                position: relative;
+                height: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+   <div class="sidebar">
+        <h3>Frost Coffee Admin</h3>
+        <a href="admin.html">Dashboard</a>
+        <a href="traffic.html">Traffic</a>
+        <a href="orders.html">Orders</a>
+        <a href="settings.html">Settings</a>
+        <a href="users.html">Users</a>
+        <a href="analytics.html">Analytics</a>
+    </div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="#">Frost Coffee Orders Dashboard</a>
+        </nav>
+
+        <!-- Orders Dashboard Heading -->
+        <div class="container-fluid mt-4 fade-in">
+            <h1>Order Statistics</h1>
+            <p>View and analyze the details of recent orders and order trends.</p>
+
+            <!-- Metrics Grid -->
+            <div class="dashboard-grid fade-in">
+                <!-- Total Orders Card -->
+                <div class="card">
+                    <h5 class="card-title">Total Orders</h5>
+                    <h2>3,450</h2>
+                    <small>Total number of orders</small>
+                </div>
+
+                <!-- Completed Orders Card -->
+                <div class="card">
+                    <h5 class="card-title">Completed Orders</h5>
+                    <h2>3,100</h2>
+                    <small>Orders that were successfully completed</small>
+                </div>
+
+                <!-- Pending Orders Card -->
+                <div class="card">
+                    <h5 class="card-title">Pending Orders</h5>
+                    <h2>250</h2>
+                    <small>Orders that are still pending</small>
+                </div>
+
+                <!-- Cancelled Orders Card -->
+                <div class="card">
+                    <h5 class="card-title">Cancelled Orders</h5>
+                    <h2>100</h2>
+                    <small>Orders that were cancelled</small>
+                </div>
+
+                <!-- Average Order Value Card -->
+                <div class="card">
+                    <h5 class="card-title">Average Order Value</h5>
+                    <h2>$15.75</h2>
+                    <small>Average value of each order</small>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row mt-5 fade-in">
+                <div class="col-md-6">
+                    <div class="card chart-container">
+                        <h5>Monthly Orders Overview</h5>
+                        <canvas id="monthlyOrdersChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card chart-container">
+                        <h5>Daily Orders Trends</h5>
+                        <canvas id="dailyOrdersChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table of Recent Orders -->
+            <div class="table-responsive fade-in">
+                <h5>Recent Orders</h5>
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>#12345</td>
+                            <td>John Doe</td>
+                            <td>2024-09-01</td>
+                            <td>Completed</td>
+                            <td>$22.50</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>#12346</td>
+                            <td>Jane Smith</td>
+                            <td>2024-09-02</td>
+                            <td>Pending</td>
+                            <td>$18.00</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>#12347</td>
+                            <td>Michael Johnson</td>
+                            <td>2024-09-02</td>
+                            <td>Cancelled</td>
+                            <td>$15.00</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>#12348</td>
+                            <td>Emily Davis</td>
+                            <td>2024-09-03</td>
+                            <td>Completed</td>
+                            <td>$20.25</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>#12349</td>
+                            <td>Daniel Brown</td>
+                            <td>2024-09-03</td>
+                            <td>Completed</td>
+                            <td>$12.75</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="fade-in">
+        &copy; 2024 Frost Coffee. All rights reserved.
+    </footer>
+
+    <!-- Chart.js Scripts -->
+    <script>
+        const ctxMonthlyOrders = document.getElementById('monthlyOrdersChart').getContext('2d');
+        const monthlyOrdersChart = new Chart(ctxMonthlyOrders, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Monthly Orders',
+                    data: [280, 320, 400, 350, 450, 500, 550, 600, 620, 650, 700, 750],
+                    backgroundColor: 'rgba(140, 94, 60, 0.2)',
+                    borderColor: 'rgba(140, 94, 60, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month',
+                            color: '#4a3b2a'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Orders',
+                            color: '#4a3b2a'
+                        }
+                    }
+                }
+            }
+        });
+
+        const ctxDailyOrders = document.getElementById('dailyOrdersChart').getContext('2d');
+        const dailyOrdersChart = new Chart(ctxDailyOrders, {
+            type: 'bar',
+            data: {
+                labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                datasets: [{
+                    label: 'Daily Orders',
+                    data: [50, 60, 70, 80, 90, 100, 110],
+                    backgroundColor: '#8c5e3c'
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Day of the Week',
+                            color: '#4a3b2a'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Orders',
+                            color: '#4a3b2a'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

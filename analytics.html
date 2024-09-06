@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frost Coffee Analytics Dashboard</title>
+
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Include Montserrat font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --main-bg-color: #f2e8d5;
+            --main-text-color: #4a3b2a;
+            --accent-color: #8c5e3c;
+            --button-bg-color: #d2b98b;
+            --form-bg-color: #f5e8d4;
+            --input-border-color: #c1a58d;
+            --overlay-bg-gradient: linear-gradient(to right, #f2e8d5, #e9d8a6, #d2b98b, #f5e8d4);
+            --frosty-blue: #87ceeb;
+            --ice-blue: #d8efff;
+            --light-beige: #f8f2e7;
+            --drag-bar-color: #e5d3c2; /* Very light shade of brown */
+            --dark-bg-color: #1e1e1e;
+            --dark-text-color: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--main-text-color);
+            background-color: var(--main-bg-color);
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .dark-mode {
+            background-color: var(--dark-bg-color);
+            color: var(--dark-text-color);
+        }
+
+        .dark-mode .card {
+            background-color: #333;
+            border-color: #444;
+        }
+
+        .dark-mode .navbar {
+            background-color: #333;
+        }
+
+        .dark-mode .sidebar {
+            background-color: #2c2c2c;
+            color: var(--dark-text-color);
+        }
+
+        .dark-mode .sidebar a {
+            color: var(--dark-text-color);
+        }
+
+        .dark-mode .sidebar a:hover {
+            background-color: #444;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container-fluid {
+            padding-left: 20px;
+        }
+
+        .sidebar {
+            background-color: var(--drag-bar-color);
+            color: #4a3b2a;
+            padding-top: 20px;
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transition: all 0.3s ease-in-out;
+            border-right: 2px solid var(--accent-color);
+            overflow-y: auto;
+        }
+
+        .sidebar a {
+            color: #4a3b2a;
+            padding: 15px;
+            display: block;
+            font-size: 16px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .sidebar a:hover {
+            background-color: var(--ice-blue);
+            color: var(--main-text-color);
+        }
+
+        .sidebar h3 {
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .main-content {
+            margin-left: 270px;
+            padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .card {
+            background-color: var(--form-bg-color);
+            border: 1px solid var(--input-border-color);
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar {
+            background-color: var(--frosty-blue);
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .navbar-brand {
+            color: #fff;
+        }
+
+        h1, h5 {
+            color: var(--main-text-color);
+        }
+
+        footer {
+            background-color: var(--frosty-blue);
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .chart-container {
+            margin-top: 20px;
+            position: relative;
+            height: 400px;
+        }
+
+        .activity-feed {
+            margin-top: 20px;
+        }
+
+        .activity-feed ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .activity-feed li {
+            background-color: var(--form-bg-color);
+            border: 1px solid var(--input-border-color);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .activity-feed li:hover {
+            background-color: var(--ice-blue);
+        }
+
+        .activity-feed li .time {
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        .activity-feed li .description {
+            font-size: 1em;
+            color: var(--main-text-color);
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media only screen and (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+
+            .sidebar {
+                position: relative;
+                height: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h3>Frost Coffee Admin</h3>
+        <a href="admin.html">Dashboard</a>
+        <a href="traffic.html">Traffic</a>
+        <a href="orders.html">Orders</a>
+        <a href="settings.html">Settings</a>
+        <a href="users.html">Users</a>
+        <a href="analytics.html">Analytics</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="#">Frost Coffee Analytics Dashboard</a>
+        </nav>
+
+        <!-- Analytics Dashboard -->
+        <div class="container-fluid mt-4 fade-in">
+            <h1>Analytics Overview</h1>
+            <p>Track and analyze data for Frost Coffee.</p>
+
+            <!-- Analytics Widgets -->
+            <div class="row">
+                <!-- Total Sales Widget -->
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <h5>Total Sales</h5>
+                        <h2>$78,910</h2>
+                        <p>+10% compared to last month</p>
+                    </div>
+                </div>
+
+                <!-- Total Revenue Widget -->
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <h5>Total Revenue</h5>
+                        <h2>$123,456</h2>
+                        <p>+15% compared to last month</p>
+                    </div>
+                </div>
+
+                <!-- Average Order Value Widget -->
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <h5>Average Order Value</h5>
+                        <h2>$34.56</h2>
+                        <p>-5% compared to last month</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="row">
+                <!-- Traffic Chart -->
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <h5>Website Traffic</h5>
+                        <div class="chart-container">
+                            <canvas id="trafficChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demographics Chart -->
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <h5>Visitor Demographics</h5>
+                        <div class="chart-container">
+                            <canvas id="demographicsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Performance Chart -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <h5>Sales Performance</h5>
+                        <div class="chart-container">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Trends Chart -->
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <h5>Monthly Trends</h5>
+                        <div class="chart-container">
+                            <canvas id="monthlyTrendsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Feed -->
+            <div class="activity-feed">
+                <h5>Recent Activity</h5>
+                <ul>
+                    <li>
+                        <div class="description">Product launch for new coffee blend</div>
+                        <div class="time">5 minutes ago</div>
+                    </li>
+                    <li>
+                        <div class="description">Weekly sales report generated</div>
+                        <div class="time">30 minutes ago</div>
+                    </li>
+                    <li>
+                        <div class="description">Updated promotional campaign</div>
+                        <div class="time">1 hour ago</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2024 Frost Coffee. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Include Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <!-- Chart.js Initialization -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ctxTraffic = document.getElementById('trafficChart').getContext('2d');
+            var trafficChart = new Chart(ctxTraffic, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'Website Traffic',
+                        data: [50, 75, 100, 125, 150, 175, 200],
+                        borderColor: '#8c5e3c',
+                        backgroundColor: 'rgba(140, 94, 60, 0.2)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+
+            var ctxDemographics = document.getElementById('demographicsChart').getContext('2d');
+            var demographicsChart = new Chart(ctxDemographics, {
+                type: 'pie',
+                data: {
+                    labels: ['Male', 'Female', 'Non-Binary'],
+                    datasets: [{
+                        label: 'Visitor Demographics',
+                        data: [50, 40, 10],
+                        backgroundColor: ['#87ceeb', '#d8efff', '#f2e8d5']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.label || '';
+                                    if (context.parsed) {
+                                        label += ': ' + context.raw + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            var ctxSales = document.getElementById('salesChart').getContext('2d');
+            var salesChart = new Chart(ctxSales, {
+                type: 'bar',
+                data: {
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    datasets: [{
+                        label: 'Sales Performance',
+                        data: [2000, 3000, 2500, 4000],
+                        backgroundColor: '#8c5e3c',
+                        borderColor: '#4a3b2a',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            var ctxMonthlyTrends = document.getElementById('monthlyTrendsChart').getContext('2d');
+            var monthlyTrendsChart = new Chart(ctxMonthlyTrends, {
+                type: 'bar',
+                data: {
+                    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                    datasets: [{
+                        label: 'Monthly Trends',
+                        data: [1200, 1400, 1300, 1600, 1500, 1800],
+                        backgroundColor: '#d2b98b',
+                        borderColor: '#4a3b2a',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
